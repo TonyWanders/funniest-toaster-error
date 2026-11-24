@@ -14,7 +14,7 @@ import os
 import sys
 from pathlib import Path
 
-ENTRY = "ERROR E04: I toasted it perfectly. You left it in me for an hour. This is on you."
+ENTRY = "ERROR E22: Crumb tray at 98%. One more slice and I am filing for workers' compensation."
 
 MIN_CHARS = 1
 MAX_CHARS = 120
@@ -56,19 +56,23 @@ def write_entry(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def fail(message: str) -> int:
+    """Report one clean error line on stderr and return exit code 1."""
+    print(message, file=sys.stderr)
+    return 1
+
+
 def main() -> int:
     try:
         chars = validate(ENTRY)
     except ValueError as exc:
-        print(exc, file=sys.stderr)
-        return 1
+        return fail(str(exc))
 
     path = resolve_output_path()
     try:
         write_entry(path, ENTRY)
     except OSError as exc:
-        print(f"could not write {path}: {exc}", file=sys.stderr)
-        return 1
+        return fail(f"could not write {path}: {exc}")
     print(ENTRY)
     return 0
 
